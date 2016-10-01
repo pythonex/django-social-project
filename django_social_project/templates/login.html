@@ -1,0 +1,63 @@
+
+<html>
+    <head>
+        <title>Let's get skilltest</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.5/angular.min.js"></script>
+
+    </head>
+    <body>
+
+
+        {% if user and not user.is_anonymous %}
+            <p>Hello, {{ user.get_full_name }}!</p>
+
+            <div ng-app="myApp">
+                <div ng-controller="mainCtrl">
+
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                              <th>No</th>
+                              <th>Message Id</th>
+                              <th>Snippet</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in maillist">
+                                <td>// $index + 1 //</td>
+                                <td>//x.id//</td>
+                                <td>//x.snippet//</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+
+            <br>
+
+            <a href="/logout">Logout</a>
+        {% else %}
+
+            <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
+
+        {% endif %}
+    </body>
+</html>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('mainCtrl', function($scope, $http) {
+        $http.get("http://localhost:8000/list/")
+        .then(function (response) {
+                    console.log(response.data);
+                    $scope.maillist = response.data;
+                });
+    });
+    app.config(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('//').endSymbol('//');
+    });
+</script>
